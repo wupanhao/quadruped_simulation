@@ -14,7 +14,7 @@ def load_robot():
     p.connect(p.GUI)
     plane = p.loadURDF("plane.urdf")
     p.setGravity(0, 0, -9.8)
-    p.setTimeStep(1./500)
+    p.setTimeStep(1./100)
     # p.setDefaultContactERP(0)
     # urdfFlags = p.URDF_USE_SELF_COLLISION+p.URDF_USE_SELF_COLLISION_EXCLUDE_ALL_PARENTS
     urdfFlags = p.URDF_USE_SELF_COLLISION

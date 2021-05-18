@@ -1,7 +1,7 @@
 # quadruped simulation
 
 ## install required package
-`pip3 install transform3d flask pybullet`
+`pip3 install transforms3d flask pybullet`
 
 ## run simulation
 `python3 simulate.py`
