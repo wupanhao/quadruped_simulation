@@ -1,4 +1,5 @@
 # quadruped simulation
+![image](https://user-images.githubusercontent.com/16276625/118749663-989a9100-b890-11eb-8f97-70fe245f47fa.png)
 
 ## install required package
 `pip3 install transforms3d flask pybullet`
