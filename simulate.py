@@ -7,12 +7,15 @@ cameraDistId = None
 jointIds = []
 quadruped = None
 jointStateIds = []
+pre_pos = []
+traceIds = [i*4+5 for i in range(4)]
 
 
 def load_robot():
     global maxForceId
     global cameraDistId
     global quadruped
+    global traceIds
     p.connect(p.GUI)
     plane = p.loadURDF("plane.urdf")
     p.setGravity(0, 0, -9.8)
@@ -22,6 +25,8 @@ def load_robot():
     urdfFlags = p.URDF_USE_SELF_COLLISION
     quadruped = p.loadURDF(
         "a1/urdf/a1.urdf", [0, 0, 0.48], [0, 0, 0, 1], flags=urdfFlags, useFixedBase=False)
+    for i in traceIds:
+        pre_pos.append(p.getLinkState(quadruped, i)[0])
 
     # enable collision between lower legs
     for j in range(p.getNumJoints(quadruped)):
@@ -38,7 +43,7 @@ def load_robot():
                     quadruped, quadruped, 2, 5, enableCollision)
 
     maxForceId = p.addUserDebugParameter("maxForce", 0, 100, 20)
-    cameraDistId = p.addUserDebugParameter("cameraDist", 0, 5, 2)
+    cameraDistId = p.addUserDebugParameter("cameraDist", 0, 5, 1)
 
     for j in range(p.getNumJoints(quadruped)):
         p.changeDynamics(quadruped, j, linearDamping=0, angularDamping=0)
@@ -62,6 +67,7 @@ def load_robot():
 
 
 def set_actuator_postions(joint_states):
+    global pre_pos
     maxForce = p.readUserDebugParameter(maxForceId)
     for leg_index in range(4):
         for axis_index in range(3):
@@ -76,6 +82,11 @@ def set_actuator_postions(joint_states):
     p.stepSimulation()
     pos, ori = p.getBasePositionAndOrientation(quadruped)
     dist = p.readUserDebugParameter(cameraDistId)
+    i = 0
+    target_pos = p.getLinkState(quadruped, traceIds[i])[0]
+    p.addUserDebugLine(pre_pos[i], target_pos, lineColorRGB=[
+        1, 0, 0], lifeTime=3, lineWidth=2)
+    pre_pos[i] = target_pos
     p.resetDebugVisualizerCamera(
         cameraDistance=dist, cameraYaw=50, cameraPitch=-35, cameraTargetPosition=pos)
 
