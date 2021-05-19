@@ -3,6 +3,7 @@ import time
 import numpy as np
 
 maxForceId = None
+cameraDistId = None
 jointIds = []
 quadruped = None
 jointStateIds = []
@@ -10,6 +11,7 @@ jointStateIds = []
 
 def load_robot():
     global maxForceId
+    global cameraDistId
     global quadruped
     p.connect(p.GUI)
     plane = p.loadURDF("plane.urdf")
@@ -36,6 +38,7 @@ def load_robot():
                     quadruped, quadruped, 2, 5, enableCollision)
 
     maxForceId = p.addUserDebugParameter("maxForce", 0, 100, 20)
+    cameraDistId = p.addUserDebugParameter("cameraDist", 0, 5, 2)
 
     for j in range(p.getNumJoints(quadruped)):
         p.changeDynamics(quadruped, j, linearDamping=0, angularDamping=0)
@@ -71,6 +74,10 @@ def set_actuator_postions(joint_states):
             p.setJointMotorControl2(
                 quadruped, jointIds[i], p.POSITION_CONTROL, targetPos, force=maxForce)
     p.stepSimulation()
+    pos, ori = p.getBasePositionAndOrientation(quadruped)
+    dist = p.readUserDebugParameter(cameraDistId)
+    p.resetDebugVisualizerCamera(
+        cameraDistance=dist, cameraYaw=50, cameraPitch=-35, cameraTargetPosition=pos)
 
 
 def read_parameter():
@@ -80,7 +87,11 @@ def read_parameter():
         p.setJointMotorControl2(
             quadruped, jointIds[j], p.POSITION_CONTROL, targetPos, force=maxForce)
     p.stepSimulation()
-    time.sleep(1./500)
+    pos, ori = p.getBasePositionAndOrientation(quadruped)
+    dist = p.readUserDebugParameter(cameraDistId)
+    p.resetDebugVisualizerCamera(
+        cameraDistance=dist, cameraYaw=50, cameraPitch=-35, cameraTargetPosition=pos)
+    time.sleep(1./100)
 
 
 if __name__ == '__main__':
